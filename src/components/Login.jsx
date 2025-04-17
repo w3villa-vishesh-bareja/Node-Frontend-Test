@@ -44,8 +44,13 @@ function Login() {
       if (response.data.success === true) {
         const nextAction = response.data.data[0].user.next_action;
         setNextAction(nextAction);
-        setToken(response.data.data[0].user.token);
+        console.log(response.data.data[0].token)
+
+        setToken(response.data.data[0].token);
+        console.log(token)
         if (nextAction === "NONE") {
+          sessionStorage.setItem("token",token);
+
           navigate("/dashboard");
         } else if (nextAction === "PHONE_VERIFICATION") {
           navigate("/register/EnterNumber");

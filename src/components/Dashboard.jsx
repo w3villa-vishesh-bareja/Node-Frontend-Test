@@ -2,178 +2,108 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import Todo from "./Todo";
+import Group from "./Group";
+import CollaborativeProject from "./Collaborative";
+
 const Dashboard = () => {
-    const [todos, setTodos] = useState([]);
-    const [newTodo, setNewTodo] = useState("");
+    const [activeTab, setActiveTab] = useState("todo");
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
-    // Handler for logout functionality
     const handleLogout = () => {
-        sessionStorage.removeItem("token"); 
-        sessionStorage.removeItem("email");   
-        sessionStorage.removeItem("id");   
-        sessionStorage.removeItem("phone_number");   
-        sessionStorage.removeItem("user");
+        sessionStorage.clear();
         navigate("/register/login");
     };
 
-    // Fetch todos from API
-    const fetchTodos = async () => {
-        console.log("Fetching todos from API");
-        // Simulate API call
-        const fetchedTodos = [
-            { id: 1, task: "Learn React", completed: false },
-            { id: 2, task: "Build a Todo App", completed: true },
-        ];
-        setTodos(fetchedTodos);
-    };
-
-    // Add a new todo
-    const handleAddTodo = async () => {
-        if (newTodo.trim() === "") return;
-        console.log("Adding new todo via API");
-        // Simulate API call
-        const addedTodo = { id: Date.now(), task: newTodo, completed: false };
-        setTodos([...todos, addedTodo]);
-        setNewTodo("");
-    };
-
-    // Toggle todo completion
-    const handleToggleTodo = async (id) => {
-        console.log(`Toggling todo completion via API for id: ${id}`);
-        // Simulate API call
-        setTodos(
-            todos.map((todo) =>
-                todo.id === id ? { ...todo, completed: !todo.completed } : todo
-            )
-        );
-    };
-
-    // Delete a todo
-    const handleDeleteTodo = async (id) => {
-        console.log(`Deleting todo via API for id: ${id}`);
-        // Simulate API call
-        setTodos(todos.filter((todo) => todo.id !== id));
-    };
-
     useEffect(() => {
+        let token = sessionStorage.getItem("token");
+
         const getTokenFromCookie = () => {
             const tokenMatch = document.cookie
-              .split("; ")
-              .find((row) => row.startsWith("token="));
-              return tokenMatch ? tokenMatch.split("=")[1] : null;
-          };
-          const token = getTokenFromCookie();
-          console.log(token)
-          if (token) {
-            sessionStorage.setItem("token", token);
-          }else{
-            navigate("/login")
-          }
-            (
-            async ()=>{
+                .split("; ")
+                .find((row) => row.startsWith("token="));
+            return tokenMatch ? tokenMatch.split("=")[1] : null;
+        };
+
+        if (!token) token = getTokenFromCookie();
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+
+        sessionStorage.setItem("token", token);
+
+        (async () => {
             try {
-                const response = await axios.get("http://localhost:5000/user/getUser" , {
-                    headers:{
-                        Authorization: `Bearer ${token}`
-                    }
+                const response = await axios.get("http://localhost:5000/user/getUser", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 });
-                sessionStorage.setItem("user",JSON.stringify(response.data.data[0].user));
-              } catch (error) {
+                const userData = response.data.data[0].user;
+                sessionStorage.setItem("user", JSON.stringify(userData));
+                setUser(userData);
+            } catch (error) {
                 console.error(error);
-                navigate('/login')
-              }
-          })();
-        fetchTodos();
+                navigate("/login");
+            }
+        })();
     }, []);
 
     return (
-        <div style={{ backgroundColor: "#121212", color: "#ffffff", minHeight: "100vh" }}>
-            <nav style={{ padding: "1rem", borderBottom: "1px solid #333" }}>
-                <h1>Dashboard</h1>
+        <div className="min-h-screen bg-gray-900 text-white">
+            {/* Top Navbar */}
+            <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-700 bg-gray-800">
+                <div className="flex items-center gap-3">
+                    {user && (
+                        <>
+                            <img
+                                src={user.photo || "https://lh3.googleusercontent.com/a/ACg8ocIa4g1EMnGziirPjc6zDlB3CfjzK-BJrpclmyhVTmIAJ0piRg=s96-c"}
+                                alt="Profile"
+                                className="w-10 h-10 rounded-full"
+                                referrerPolicy="no-referrer"
+                            />
+                            <span className="text-lg font-medium">{user.name}</span>
+                        </>
+                    )}
+                </div>
                 <button
                     onClick={handleLogout}
-                    style={{
-                        backgroundColor: "#bb86fc",
-                        color: "#121212",
-                        border: "none",
-                        padding: "0.5rem 1rem",
-                        cursor: "pointer",
-                    }}
+                    className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded transition"
                 >
                     Logout
                 </button>
             </nav>
 
-            
-            <div style={{ padding: "2rem" }}>
-                <h2>Todo List</h2>
-                <div style={{ marginBottom: "1rem" }}>
-                    <input
-                        type="text"
-                        value={newTodo}
-                        onChange={(e) => setNewTodo(e.target.value)}
-                        placeholder="Add a new task"
-                        style={{
-                            padding: "0.5rem",
-                            marginRight: "0.5rem",
-                            backgroundColor: "#333",
-                            color: "#fff",
-                            border: "1px solid #555",
-                        }}
-                    />
-                    <button
-                        onClick={handleAddTodo}
-                        style={{
-                            backgroundColor: "#03dac6",
-                            color: "#121212",
-                            border: "none",
-                            padding: "0.5rem 1rem",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Add
-                    </button>
-                </div>
-                <ul style={{ listStyle: "none", padding: 0 }}>
-                    {todos.map((todo) => (
-                        <li
-                            key={todo.id}
-                            style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                marginBottom: "0.5rem",
-                                padding: "0.5rem",
-                                backgroundColor: "#333",
-                                borderRadius: "4px",
-                            }}
-                        >
-                            <span
-                                onClick={() => handleToggleTodo(todo.id)}
-                                style={{
-                                    textDecoration: todo.completed ? "line-through" : "none",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                {todo.task}
-                            </span>
-                            <button
-                                onClick={() => handleDeleteTodo(todo.id)}
-                                style={{
-                                    backgroundColor: "#cf6679",
-                                    color: "#121212",
-                                    border: "none",
-                                    padding: "0.5rem",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+            {/* Tabs */}
+            <div className="flex justify-center gap-6 bg-gray-800 py-4 border-b border-gray-700">
+                <button
+                    onClick={() => setActiveTab("todo")}
+                    className={`px-4 py-2 rounded ${activeTab === "todo" ? "bg-purple-600" : "bg-gray-700 hover:bg-gray-600"}`}
+                >
+                    Todo
+                </button>
+                <button
+                    onClick={() => setActiveTab("group")}
+                    className={`px-4 py-2 rounded ${activeTab === "group" ? "bg-purple-600" : "bg-gray-700 hover:bg-gray-600"}`}
+                >
+                    Group
+                </button>
+                <button
+                    onClick={() => setActiveTab("collab")}
+                    className={`px-4 py-2 rounded ${activeTab === "collab" ? "bg-purple-600" : "bg-gray-700 hover:bg-gray-600"}`}
+                >
+                    Collaborative Project
+                </button>
             </div>
+
+            {/* Section Content */}
+            <main className="px-6 py-8">
+                {activeTab === "todo" && <Todo user={user} />}
+                {activeTab === "group" && <Group user={user} />}
+                {activeTab === "collab" && <CollaborativeProject user={user} />}
+            </main>
         </div>
     );
 };
