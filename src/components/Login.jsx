@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useNextAction } from "../context/NextActionContext";
@@ -49,7 +49,7 @@ function Login() {
         setToken(response.data.data[0].token);
         console.log(token)
         if (nextAction === "NONE") {
-          sessionStorage.setItem("token",token);
+          sessionStorage.setItem("token",response.data.data[0].token);
 
           navigate("/dashboard");
         } else if (nextAction === "PHONE_VERIFICATION") {
@@ -67,6 +67,13 @@ function Login() {
       console.error("Login Error:", error.response?.data || error.message);
     }
   }
+  useEffect
+  (() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#121212] px-4 text-white">

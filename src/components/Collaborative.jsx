@@ -7,6 +7,7 @@ const CollaborativeProject = ({ user }) => {
     const [projects, setProjects] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
+    
     const fetchProjects = async () => {
         try {
             const res = await axios.post("http://localhost:5000/project/getAllProjects", {
@@ -18,18 +19,14 @@ const CollaborativeProject = ({ user }) => {
         }
     };
     async function handleProjectClick(projectUniqueId) {
-        const res = await fetch(`/api/project/details?projectUniqueId=${projectUniqueId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: YOUR_USER_ID }),
-        });
-      
-        const data = await res.json();
-        if (data.success) {
-          renderProjectDetails(data.data[0]);
-        } else {
-          console.error(data.message);
-        }
+
+        console.log(user)
+        navigate(`/project/${projectUniqueId}`,{
+            state:{
+                user:user
+            }
+        })
+
       }
     const handleCreateProject = async ({ name, deadline }) => {
         try {
@@ -39,21 +36,35 @@ const CollaborativeProject = ({ user }) => {
                 userId: user.id,
                 type: "collaborative"
             });
-            fetchProjects(); // Refresh
+            fetchProjects(); 
         } catch (err) {
             console.error("Error creating project:", err);
         }
     };
 
-    function renderProjectDetails(project){
-        navigate(`/project/${project.unique.id}`)
-    }
+
     useEffect(() => {
+        console.log("first")
         if (user?.id) fetchProjects();
-    }, [user]);
+    }, []);
 
     return (
+        
         <div className="p-4">
+                  {user.tier !== "TIER_2" && user.tier !== "TIER_3" && (
+        <div className="flex justify-center items-center h-screen">
+          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Upgrade to Tier 2 or Tier 3</h2>
+            <p className="mb-4">To access the Group feature, please upgrade your plan.</p>
+            <button
+              onClick={() => (window.location.href = "/upgrade")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            >
+              Upgrade Now
+            </button>
+          </div>
+        </div>
+      )}
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Collaborative Projects</h2>
                 <button
@@ -66,7 +77,7 @@ const CollaborativeProject = ({ user }) => {
 
             <ul className="space-y-3" >
                 {projects.map((project) => (
-                    <li key={project.id} className="bg-gray-800 p-4 rounded shadow" onClick={handleProjectClick(project.unique_id)}>
+                    <li key={project.id} className="bg-gray-800 p-4 rounded shadow" onClick={()=>handleProjectClick(project.unique_id)} >
                         <div className="text-lg">{project.name}</div>
                         <div className="text-sm text-gray-400">Status: {project.status}</div>
                         <div className="text-sm text-gray-400">Deadline: {project.deadline?.split("T")[0]}</div>

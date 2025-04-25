@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import CreateProjectModal from "./CreateProjectModal";
+import CreateTaskModal from "./CreateTaskModal";
 
 const Todo = ({ user }) => {
     const [todos, setTodos] = useState([]);
     const [newTodo, setNewTodo] = useState("");
+    const [showTaskModal, setShowTaskModal] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -22,16 +25,19 @@ const Todo = ({ user }) => {
         fetchTodos();
     }, [user]);
 
-    const handleAddTodo = async () => {
-        if (newTodo.trim() === "") return;
+    const handleAddTodo = async (title) => {
         try {
             const response = await axios.post("http://localhost:5000/task/createSimpleTask", {
                 userId: user.id,
-                title: newTodo,
-                description: "this is a new tdod"
+                title: title,
+                description: "This is a new todo",
             });
-            setTodos([...todos, response.data.data[0]]);
-            setNewTodo("");
+            const createdTask = response.data.data;
+            if (createdTask) {
+                setTodos([...todos, createdTask]);
+            } else {
+                console.error("Failed to create task: Invalid response from API");
+            }
         } catch (error) {
             console.error("Error creating todo:", error);
         }
@@ -52,24 +58,34 @@ const Todo = ({ user }) => {
         }
     };
 
+    const handleCreateProject = async ({ name, deadline }) => {
+        try {
+            await axios.post("http://localhost:5000/project/createProject", {
+                name,
+                deadline,
+                userId: user.id,
+                type: "collaborative",
+            });
+        } catch (err) {
+            console.error("Error creating project:", err);
+        }
+    };
+
     return (
         <div>
-            <h2 className="text-2xl font-semibold mb-4">Todo List</h2>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
-                <input
-                    type="text"
-                    value={newTodo}
-                    onChange={(e) => setNewTodo(e.target.value)}
-                    placeholder="Add a new task"
-                    className="flex-1 px-4 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <button
-                    onClick={handleAddTodo}
-                    className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded transition"
-                >
-                    Add
-                </button>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Todo List</h2>
+                <div className="space-x-3">
+                    <button
+                        onClick={() => setShowTaskModal(true)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 font-light"
+                    >
+                        + Add Task
+                    </button>
+                    
+                </div>
             </div>
+            
             <ul className="space-y-3">
                 {todos.map((todo) => (
                     <li
@@ -86,6 +102,14 @@ const Todo = ({ user }) => {
                     </li>
                 ))}
             </ul>
+
+            <CreateTaskModal
+                isOpen={showTaskModal}
+                onClose={() => setShowTaskModal(false)}
+                onCreate={handleAddTodo}
+            />
+            
+
         </div>
     );
 };

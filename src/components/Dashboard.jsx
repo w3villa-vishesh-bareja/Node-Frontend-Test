@@ -16,6 +16,13 @@ const Dashboard = () => {
         navigate("/register/login");
     };
 
+    const handleUpgrade = () => {   
+        navigate("/upgrade",{
+            state:{
+                user:user
+            }
+        });
+    }
     useEffect(() => {
         let token = sessionStorage.getItem("token");
 
@@ -68,6 +75,15 @@ const Dashboard = () => {
                         </>
                     )}
                 </div>
+
+{(user?.tier == 'TIER_1' || user?.tier == 'TIER_2') && (
+                <button
+                    onClick={handleUpgrade}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
+                >
+                    Upgrade Tier
+                </button>
+            )}
                 <button
                     onClick={handleLogout}
                     className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded transition"

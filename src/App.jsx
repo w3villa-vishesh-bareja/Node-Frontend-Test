@@ -8,6 +8,8 @@ import Profile from './components/Profile'
 import UploadProfileImage from './components/PhotoUpload'
 import SetUsername from './components/SetUsername'
 import Dashboard from './components/Dashboard'
+import Payment from './components/Payment'
+import ProjectBoard from './components/ProjectBoard'
 
 function App() {
   return (
@@ -22,8 +24,9 @@ function App() {
         <Route path="/register/uploadProfile" element={< UploadProfileImage/>} />
         <Route path="/register/setUsername" element={< SetUsername/>} />
 
-        {/* Optional fallback route */}
         <Route path='/dashboard' element={<Dashboard/>} />
+        <Route path='/upgrade' element={<Payment/>} />
+        <Route path='/project/:projectUniqueId' element={<ProjectBoard/>} />
         <Route path="*" element={<Login />} />
       </Routes>
     </Router>
