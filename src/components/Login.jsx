@@ -73,6 +73,7 @@ function Login() {
     if (token) {
       navigate("/dashboard");
     }
+    sessionStorage.clear();
   }, [navigate]);
 
   return (

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import { FiCheck } from 'react-icons/fi';
 
 const Payment = () => {
   const location = useLocation();
@@ -66,32 +67,106 @@ const Payment = () => {
       setLoading(false);
     }
   };
+  const tiers = [
+    {
+      name: "Tier 2",
+      price: 1000,
+      key: "tier_2",
+      color: "indigo",
+      benefits: [
+        "Access to Group Projects",
+        "Multiple task assignments",
+        "Advanced project tracking",
+        "Priority support"
+      ]
+    },
+    {
+      name: "Tier 3",
+      price: 2000,
+      key: "tier_3",
+      color: "indigo",
+      benefits: [
+        "All Tier 2 features",
+        "Access to Collaborative Projects",
+        "Real-time collaboration",
+        "Advanced analytics",
+        "24/7 premium support"
+      ]
+    }
+  ];
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-6 text-indigo-600">Buy Plans</h1>
+return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-4">
+            Upgrade Your Plan
+          </h1>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Choose the perfect plan to enhance your project management experience
+          </p>
+        </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
-        <button
-          onClick={() => handlePurchase("tier_2")}
-          disabled={loading}
-          className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-6 rounded shadow disabled:opacity-50"
-        >
-          Buy Tier 2 Plan
-        </button>
+        <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2 lg:max-w-4xl lg:mx-auto">
+          {tiers.map((tier) => (
+            <div
+              key={tier.key}
+              className="relative bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50
+                       overflow-hidden transition-all duration-300 hover:scale-105 hover:border-gray-600/50"
+            >
+              <div className="p-8">
+                <h3 className={`text-2xl font-semibold text-${tier.color}-400`}>
+                  {tier.name}
+                </h3>
+                <div className="mt-4 flex items-baseline">
+                  <span className="text-5xl font-extrabold text-white">
+                    ₹{tier.price}
+                  </span>
+                  <span className="ml-2 text-gray-400">/lifetime</span>
+                </div>
 
-        <button
-          onClick={() => handlePurchase("tier_3")}
-          disabled={loading}
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded shadow disabled:opacity-50"
-        >
-          Buy Tier 3 Plan
-        </button>
+                <ul className="mt-8 space-y-4">
+                  {tier.benefits.map((benefit) => (
+                    <li key={benefit} className="flex items-center text-gray-300">
+                      <FiCheck className={`w-5 h-5 text-${tier.color}-400 mr-2`} />
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={() => handlePurchase(tier.key)}
+                  disabled={loading}
+                  className={`mt-8 w-full bg-${tier.color}-500 hover:bg-${tier.color}-600 
+                           text-white font-semibold py-3 px-6 rounded-lg shadow-lg 
+                           hover:shadow-${tier.color}-500/25 transition-all duration-300 
+                           disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {loading ? 'Processing...' : `Upgrade to ${tier.name}`}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {error && (
+          <div className="mt-8 text-center">
+            <p className="text-red-400 bg-red-500/10 border border-red-500/20 
+                         rounded-lg px-4 py-2 inline-block">
+              {error}
+            </p>
+          </div>
+        )}
+
+        {success && (
+          <div className="mt-8 text-center">
+            <p className="text-green-400 bg-green-500/10 border border-green-500/20 
+                         rounded-lg px-4 py-2 inline-block">
+              {success}
+            </p>
+          </div>
+        )}
       </div>
-
-      {loading && <p className="mt-4 text-gray-600">Processing your request...</p>}
-      {error && <p className="mt-4 text-red-500">{error}</p>}
-      {success && <p className="mt-4 text-green-600 font-semibold">{success}</p>}
     </div>
   );
 };

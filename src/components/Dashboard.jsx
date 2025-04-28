@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import NotificationDropdown from './NotificationDropdown';
 import Todo from "./Todo";
 import Group from "./Group";
 import CollaborativeProject from "./Collaborative";
@@ -57,68 +57,86 @@ const Dashboard = () => {
             }
         })();
     }, []);
-
+    console.log(user);
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
-            {/* Top Navbar */}
-            <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-700 bg-gray-800">
-                <div className="flex items-center gap-3">
-                    {user && (
-                        <>
-                            <img
-                                src={user.photo || "https://lh3.googleusercontent.com/a/ACg8ocIa4g1EMnGziirPjc6zDlB3CfjzK-BJrpclmyhVTmIAJ0piRg=s96-c"}
-                                alt="Profile"
-                                className="w-10 h-10 rounded-full"
-                                referrerPolicy="no-referrer"
-                            />
-                            <span className="text-lg font-medium">{user.name}</span>
-                        </>
-                    )}
-                </div>
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+            {/* Top Navbar - Modernized */}
+            <nav className="backdrop-blur-md bg-gray-800/30 sticky top-0 z-50 border-b border-gray-700/50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-16">
+                        <div className="flex items-center space-x-4">
+                            {user && (
+                                <>
+                                    <div className="relative">
+                                        <img
+                                            src={user.photo || "https://lh3.googleusercontent.com/a/ACg8ocIa4g1EMnGziirPjc6zDlB3CfjzK-BJrpclmyhVTmIAJ0piRg=s96-c"}
+                                            alt="Profile"
+                                            className="w-10 h-10 rounded-full ring-2 ring-purple-500/50 transition-all duration-300 hover:ring-purple-500"
+                                            referrerPolicy="no-referrer"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-lg font-medium text-white/90">{user.name}</span>
+                                        <span className="text-sm text-gray-400">{user.tier}</span>
+                                    </div>
+                                </>
+                            )}
+                        </div>
 
-{(user?.tier == 'TIER_1' || user?.tier == 'TIER_2') && (
-                <button
-                    onClick={handleUpgrade}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
-                >
-                    Upgrade Tier
-                </button>
-            )}
-                <button
-                    onClick={handleLogout}
-                    className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded transition"
-                >
-                    Logout
-                </button>
+                        <div className="flex items-center space-x-4">
+                            {(user?.tier === 'TIER_1' || user?.tier === 'TIER_2') && (
+                                <button
+                                    onClick={handleUpgrade}
+                                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 
+                                             text-white px-6 py-2 rounded-lg transition-all duration-300 transform hover:scale-105
+                                             shadow-lg hover:shadow-purple-500/25"
+                                >
+                                    Upgrade Tier
+                                </button>
+                            )}
+                            {user && <NotificationDropdown userId={user.id} />}
+
+                            <button
+                                onClick={handleLogout}
+                                className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg
+                                         transition-all duration-300 transform hover:scale-105 shadow-lg"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </nav>
 
-            {/* Tabs */}
-            <div className="flex justify-center gap-6 bg-gray-800 py-4 border-b border-gray-700">
-                <button
-                    onClick={() => setActiveTab("todo")}
-                    className={`px-4 py-2 rounded ${activeTab === "todo" ? "bg-purple-600" : "bg-gray-700 hover:bg-gray-600"}`}
-                >
-                    Todo
-                </button>
-                <button
-                    onClick={() => setActiveTab("group")}
-                    className={`px-4 py-2 rounded ${activeTab === "group" ? "bg-purple-600" : "bg-gray-700 hover:bg-gray-600"}`}
-                >
-                    Group
-                </button>
-                <button
-                    onClick={() => setActiveTab("collab")}
-                    className={`px-4 py-2 rounded ${activeTab === "collab" ? "bg-purple-600" : "bg-gray-700 hover:bg-gray-600"}`}
-                >
-                    Collaborative Project
-                </button>
+            {/* Tabs - Modernized */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div className="flex justify-center gap-4 bg-gray-800/30 backdrop-blur-md rounded-xl p-2 shadow-lg">
+                    {[
+                        { id: "todo", label: "Todo" },
+                        { id: "group", label: "Group" },
+                        { id: "collab", label: "Collaborative Project" }
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105
+                                ${activeTab === tab.id 
+                                    ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg" 
+                                    : "bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white"}`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {/* Section Content */}
-            <main className="px-6 py-8">
-                {activeTab === "todo" && <Todo user={user} />}
-                {activeTab === "group" && <Group user={user} />}
-                {activeTab === "collab" && <CollaborativeProject user={user} />}
+            {/* Main Content - Modernized */}
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="bg-gray-800/30 backdrop-blur-md rounded-xl p-6 shadow-lg">
+                    {activeTab === "todo" && <Todo user={user} />}
+                    {activeTab === "group" && <Group user={user} />}
+                    {activeTab === "collab" && <CollaborativeProject user={user} />}
+                </div>
             </main>
         </div>
     );

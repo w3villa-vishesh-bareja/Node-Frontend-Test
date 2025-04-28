@@ -4,7 +4,7 @@ import axios from 'axios';
 const CreateProjectTaskModal = ({ isOpen, onClose, projectId, userId, onTaskCreated, userDetails }) => {
   const [formData, setFormData] = useState({
     taskName: '',
-    description: '',
+    description: null,
     deadline: '',
     type: 'collaborative',
     assigned_to: null
@@ -25,13 +25,23 @@ const CreateProjectTaskModal = ({ isOpen, onClose, projectId, userId, onTaskCrea
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-
+        const payload = {
+            userId,
+            projectId,
+            type: "collaborative",
+            taskName: formData.taskName,
+            deadline: formData.deadline,
+        }
+      // Only add description to payload if it's not empty
+      if (formData.description) {
+        payload.description = formData.description;
+      }
         const assigned_to = formData.assigned_to ? [parseInt(formData.assigned_to)] : null;
 
       const response = await axios.post('http://localhost:5000/task/createTask', {
         userId,
         projectId,
-        ...formData,
+        ...payload,
         assigned_to
       });
 
