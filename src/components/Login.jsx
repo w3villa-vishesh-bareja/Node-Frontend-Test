@@ -37,7 +37,7 @@ function Login() {
         sessionStorage.setItem("token", userData.token);
         sessionStorage.setItem("id", userData.user.unique_id);
         sessionStorage.setItem("email", userData.user.email);
-        socket.emit("register_user", userData.token);
+        // socket.emit("register_user", userData.token);
 
         switch (userData.user.next_action) {
           case "NONE":
