@@ -10,7 +10,7 @@ import SetUsername from './components/SetUsername'
 import Dashboard from './components/Dashboard'
 import Payment from './components/Payment'
 import ProjectBoard from './components/ProjectBoard'
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 
 
 // const socket = io('https://nodetraining-ny09.onrender.com',{
