@@ -34,6 +34,7 @@ const Dashboard = () => {
         };
 
         if (!token) token = getTokenFromCookie();
+        console.log("token",token)
         if (!token) {
             navigate("/login");
             return;
