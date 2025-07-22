@@ -33,7 +33,7 @@ function VerifyEmail() {
       }
 
       try {
-        const response = await axios.post("http://localhost:5000/register/verifyEmail", {
+        const response = await axios.post("https://nodetraining-ny09.onrender.com/register/verifyEmail", {
           email: decodedEmail,
         }, {
           headers: {

@@ -22,7 +22,7 @@ function SetUsername() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/setUsername', {
+      const response = await axios.post('https://nodetraining-ny09.onrender.com/setUsername', {
         email: email,
         username: username,
       });

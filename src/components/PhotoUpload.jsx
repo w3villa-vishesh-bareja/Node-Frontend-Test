@@ -41,7 +41,7 @@ function PhotoUpload() {
     formData.append("email", email);
 
     try {
-      const res = await fetch("http://localhost:5000/register/uploadProfile", {
+      const res = await fetch("https://nodetraining-ny09.onrender.com/register/uploadProfile", {
         method: "POST",
         body: formData,
       });
@@ -75,7 +75,7 @@ function PhotoUpload() {
 
   const handleSkip = async () => {
     try {
-      const res = await fetch("http://localhost:5000/register/uploadProfile", {
+      const res = await fetch("https://nodetraining-ny09.onrender.com/register/uploadProfile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

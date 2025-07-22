@@ -51,7 +51,7 @@ const EditTaskModal = ({ isOpen, onClose, task, userId, onEdit }) => {
       }
       console.log(payload);
       const response = await axios.patch(
-        "http://localhost:5000/task/editSimpleTask",
+        "https://nodetraining-ny09.onrender.com/task/editSimpleTask",
         {
           userId,
           type: "simple",

@@ -16,7 +16,7 @@ const InviteUserModal = ({ isOpen, onClose, projectId, userId }) => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:5000/project/searchUser?name=${value}`);
+      const response = await axios.get(`https://nodetraining-ny09.onrender.com/project/searchUser?name=${value}`);
       if (response.data.success) {
         setSearchResults(response.data.data[0]);
       }
@@ -29,7 +29,7 @@ const InviteUserModal = ({ isOpen, onClose, projectId, userId }) => {
   const handleInvite = async (receiverId) => {
     console.log(receiverId)
     try {
-      const response = await axios.post('http://localhost:5000/project/inviteUsers', {
+      const response = await axios.post('https://nodetraining-ny09.onrender.com/project/inviteUsers', {
         userId,
         receiverId,
         projectId

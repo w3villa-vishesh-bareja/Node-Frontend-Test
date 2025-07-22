@@ -11,7 +11,7 @@ const CollaborativeProject = ({ user }) => {
     
     const fetchProjects = async () => {
         try {
-            const res = await axios.post("http://localhost:5000/project/getAllProjects", {
+            const res = await axios.post("https://nodetraining-ny09.onrender.com/project/getAllProjects", {
                 userId: user.id
             });
             setProjects(res.data.data[0]);
@@ -31,7 +31,7 @@ const CollaborativeProject = ({ user }) => {
       const handleDeleteProject = async (e, projectId) => {
         e.stopPropagation(); 
         try{
-            const response = await axios.delete(`http://localhost:5000/project/deleteProject`, {
+            const response = await axios.delete(`https://nodetraining-ny09.onrender.com/project/deleteProject`, {
                 data: {
                     userId: user.id,
                     projectId: projectId
@@ -47,7 +47,7 @@ const CollaborativeProject = ({ user }) => {
 
     const handleCreateProject = async ({ name, deadline }) => {
         try {
-            await axios.post("http://localhost:5000/project/createProject", {
+            await axios.post("https://nodetraining-ny09.onrender.com/project/createProject", {
                 name,
                 deadline,
                 userId: user.id,

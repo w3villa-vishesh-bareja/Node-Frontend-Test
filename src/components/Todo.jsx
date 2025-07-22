@@ -16,7 +16,7 @@ const Todo = ({ user }) => {
   const fetchTodos = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/task/getSimpleTasks",
+        "https://nodetraining-ny09.onrender.com/task/getSimpleTasks",
         {
           userId: user.id,
           type: "simple",
@@ -38,7 +38,7 @@ const Todo = ({ user }) => {
   const handleAddTodo = async (formData) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/task/createSimpleTask",
+        "https://nodetraining-ny09.onrender.com/task/createSimpleTask",
         {
           userId: user.id,
           title: formData.title,
@@ -58,7 +58,7 @@ const Todo = ({ user }) => {
   const handleDeleteMultipleTodos = async () => {
     try {
       await axios.delete(
-        "http://localhost:5000/task/deleteMultipleSimpleTasks",
+        "https://nodetraining-ny09.onrender.com/task/deleteMultipleSimpleTasks",
         {
           data: {
             userId: user.id,
@@ -75,7 +75,7 @@ const Todo = ({ user }) => {
   };
   const handleDeleteTodo = async (id) => {
     try {
-      await axios.delete("http://localhost:5000/task/deleteSimpleTaskSingle", {
+      await axios.delete("https://nodetraining-ny09.onrender.com/task/deleteSimpleTaskSingle", {
         data: {
           userId: user.id,
           type: "simple",

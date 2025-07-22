@@ -29,7 +29,7 @@ function VerifyOtp() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/register/verifyOtp",
+        "https://nodetraining-ny09.onrender.com/register/verifyOtp",
         {
           unique_id,
           number,
@@ -69,7 +69,7 @@ function VerifyOtp() {
   async function handleResendOtp() {
     try {
       const response = await axios.post(
-        "http://localhost:5000/register/sendOTP",
+        "https://nodetraining-ny09.onrender.com/register/sendOTP",
         {
           unique_id,
           number,

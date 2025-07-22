@@ -10,7 +10,7 @@ const NotificationDropdown = ({ userId }) => {
     const fetchInvitations = async () => {
         setLoading(true);
         try {
-            const response = await axios.post(`http://localhost:5000/project/fetchInvitations`,{
+            const response = await axios.post(`https://nodetraining-ny09.onrender.com/project/fetchInvitations`,{
                 userId:userId
             });
             if (response.data.success) {
@@ -25,7 +25,7 @@ const NotificationDropdown = ({ userId }) => {
 
     const handleInviteAction = async (projectId, action) => {
         try {
-            await axios.post(`http://localhost:5000/project/${action}Invitation`, {
+            await axios.post(`https://nodetraining-ny09.onrender.com/project/${action}Invitation`, {
                 projectId,
                 userId
             });

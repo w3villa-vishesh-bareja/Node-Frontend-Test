@@ -10,6 +10,18 @@ import SetUsername from './components/SetUsername'
 import Dashboard from './components/Dashboard'
 import Payment from './components/Payment'
 import ProjectBoard from './components/ProjectBoard'
+import io from 'socket.io-client';
+
+
+// const socket = io('https://nodetraining-ny09.onrender.com',{
+//   withCredentials : true
+// })
+// socket.on("connect",()=>{
+//   console.log('connected to server via socket.io' , socket.id)
+// });
+// socket.on('disconnect', () => {
+//   console.log('❌ Disconnected from server');
+// });
 
 function App() {
   return (

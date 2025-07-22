@@ -28,7 +28,7 @@ function PhoneNumber() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/register/sendOTP",
+        "https://nodetraining-ny09.onrender.com/register/sendOTP",
         {
           unique_id: unique_id,
           number: number,

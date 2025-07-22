@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const CreateProjectTaskModal = ({ isOpen, onClose, projectId, userId, onTaskCreated, userDetails }) => {
+const CreateProjectTaskModal = ({ isOpen, onClose, projectId, userId, onTaskCreated, userDetails, type }) => {
   const [formData, setFormData] = useState({
     taskName: '',
     description: null,
     deadline: '',
-    type: 'collaborative',
+    type: type,
     assigned_to: null
   });
   const [error, setError] = useState('');
@@ -28,7 +28,7 @@ const CreateProjectTaskModal = ({ isOpen, onClose, projectId, userId, onTaskCrea
         const payload = {
             userId,
             projectId,
-            type: "collaborative",
+            type: formData.type,
             taskName: formData.taskName,
             deadline: formData.deadline,
         }
@@ -36,9 +36,9 @@ const CreateProjectTaskModal = ({ isOpen, onClose, projectId, userId, onTaskCrea
       if (formData.description) {
         payload.description = formData.description;
       }
-        const assigned_to = formData.assigned_to ? [parseInt(formData.assigned_to)] : null;
+        const assigned_to = formData.assigned_to ? [parseInt(formData.assigned_to)] : [userId];
 
-      const response = await axios.post('http://localhost:5000/task/createTask', {
+      const response = await axios.post('https://nodetraining-ny09.onrender.com/task/createTask', {
         userId,
         projectId,
         ...payload,
@@ -116,6 +116,7 @@ const CreateProjectTaskModal = ({ isOpen, onClose, projectId, userId, onTaskCrea
               <option value="group">Group</option>
             </select>
           </div> */}
+          { type == 'collaborative' &&
           <div>
             <label className="block text-gray-300 text-sm font-medium mb-2">
               Assign To
@@ -136,6 +137,7 @@ const CreateProjectTaskModal = ({ isOpen, onClose, projectId, userId, onTaskCrea
               ))}
             </select>
           </div>
+          } 
 
           {error && <p className="text-red-500">{error}</p>}
 
