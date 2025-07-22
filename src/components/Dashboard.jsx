@@ -24,24 +24,38 @@ const Dashboard = () => {
         });
     }
     useEffect(() => {
+        console.log("📌 useEffect triggered");
+    
         let token = sessionStorage.getItem("token");
-
+        console.log("🔐 Token from sessionStorage:", token);
+    
         const getTokenFromCookie = () => {
-            const tokenMatch = document.cookie
+            const allCookies = document.cookie;
+            console.log("🍪 All document.cookie:", allCookies);
+    
+            const tokenMatch = allCookies
                 .split("; ")
                 .find((row) => row.startsWith("token="));
+    
+            console.log("🔍 Matched token cookie string:", tokenMatch);
             return tokenMatch ? tokenMatch.split("=")[1] : null;
         };
-
-        if (!token) token = getTokenFromCookie();
-        console.log("token",token)
+    
         if (!token) {
+            console.log("⚠️ No token found in sessionStorage. Checking cookie...");
+            token = getTokenFromCookie();
+            console.log("🔐 Token from cookie:", token);
+        }
+    
+        if (!token) {
+            console.log("❌ No token found in sessionStorage or cookies. Redirecting to login.");
             navigate("/login");
             return;
         }
-
+    
+        console.log("✅ Token available, saving to sessionStorage and fetching user...");
         sessionStorage.setItem("token", token);
-
+    
         (async () => {
             try {
                 const response = await axios.get("https://nodetraining-ny09.onrender.com/user/getUser", {
@@ -50,14 +64,17 @@ const Dashboard = () => {
                     },
                 });
                 const userData = response.data.data[0].user;
+                console.log("✅ User fetched successfully:", userData);
+    
                 sessionStorage.setItem("user", JSON.stringify(userData));
                 setUser(userData);
             } catch (error) {
-                console.error(error);
+                console.error("❌ Error fetching user:", error);
                 navigate("/login");
             }
         })();
     }, []);
+    
     console.log(user);
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
