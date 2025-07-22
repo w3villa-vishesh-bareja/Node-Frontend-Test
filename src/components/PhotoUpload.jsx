@@ -56,7 +56,7 @@ function PhotoUpload() {
 
         setNextAction(data.data[0].user.next_action);
         setToken(token);
-        sessionStorage.setItem(token)
+        sessionStorage.setItem("token",token)
         setTimeout(() => {
           navigate("/dashboard");
         }, 2100);
