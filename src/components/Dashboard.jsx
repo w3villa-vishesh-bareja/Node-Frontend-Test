@@ -30,6 +30,7 @@ const Dashboard = () => {
         console.log("🔐 Token from sessionStorage:", token);
     
         const getTokenFromCookie = () => {
+            console.log("cookies:",document.cookie)
             const allCookies = document.cookie;
             console.log("🍪 All document.cookie:", allCookies);
     
