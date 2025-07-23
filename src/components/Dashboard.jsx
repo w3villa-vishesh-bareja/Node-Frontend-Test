@@ -9,6 +9,7 @@ import CollaborativeProject from "./Collaborative";
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("todo");
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true); // 🔄 Loading state
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -17,69 +18,53 @@ const Dashboard = () => {
     };
 
     const handleUpgrade = () => {   
-        navigate("/upgrade",{
-            state:{
-                user:user
-            }
+        navigate("/upgrade", {
+            state: { user }
         });
-    }
+    };
+
     useEffect(() => {
-        console.log("📌 useEffect triggered");
-    
-        let token = sessionStorage.getItem("token");
-        console.log("🔐 Token from sessionStorage:", token);
-    
-        const getTokenFromCookie = () => {
-            console.log("cookies:",document.cookie)
-            const allCookies = document.cookie;
-            console.log("🍪 All document.cookie:", allCookies);
-    
-            const tokenMatch = allCookies
-                .split("; ")
-                .find((row) => row.startsWith("token="));
-    
-            console.log("🔍 Matched token cookie string:", tokenMatch);
-            return tokenMatch ? tokenMatch.split("=")[1] : null;
-        };
-    
-        if (!token) {
-            console.log("⚠️ No token found in sessionStorage. Checking cookie...");
-            token = getTokenFromCookie();
-            console.log("🔐 Token from cookie:", token);
-        }
-    
-        if (!token) {
-            console.log("❌ No token found in sessionStorage or cookies. Redirecting to login.");
-            navigate("/login");
-            return;
-        }
-    
-        console.log("✅ Token available, saving to sessionStorage and fetching user...");
-        sessionStorage.setItem("token", token);
-    
-        (async () => {
+        const fetchUser = async () => {
+            let token = sessionStorage.getItem("token");
+
+            if (!token) {
+                const tokenMatch = document.cookie
+                    .split("; ")
+                    .find(row => row.startsWith("token="));
+                token = tokenMatch ? tokenMatch.split("=")[1] : null;
+            }
+            
             try {
                 const response = await axios.get("https://nodetraining-ny09.onrender.com/user/getUser", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                    withCredentials: true
                 });
+
                 const userData = response.data.data[0].user;
-                console.log("✅ User fetched successfully:", userData);
-    
+                sessionStorage.setItem("token", token);
                 sessionStorage.setItem("user", JSON.stringify(userData));
                 setUser(userData);
+                setLoading(false);
             } catch (error) {
                 console.error("❌ Error fetching user:", error);
                 navigate("/login");
             }
-        })();
-    }, []);
-    
-    console.log(user);
+        };
+
+        fetchUser();
+    }, [navigate]);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+                <p className="text-xl animate-pulse">🔄 Verifying user...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-            {/* Top Navbar - Modernized */}
+            {/* Top Navbar */}
             <nav className="backdrop-blur-md bg-gray-800/30 sticky top-0 z-50 border-b border-gray-700/50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
@@ -114,7 +99,6 @@ const Dashboard = () => {
                                 </button>
                             )}
                             {user && <NotificationDropdown userId={user.id} />}
-
                             <button
                                 onClick={handleLogout}
                                 className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg
@@ -127,7 +111,7 @@ const Dashboard = () => {
                 </div>
             </nav>
 
-            {/* Tabs - Modernized */}
+            {/* Tabs */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 <div className="flex justify-center gap-4 bg-gray-800/30 backdrop-blur-md rounded-xl p-2 shadow-lg">
                     {[
@@ -149,7 +133,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Main Content - Modernized */}
+            {/* Main Content */}
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="bg-gray-800/30 backdrop-blur-md rounded-xl p-6 shadow-lg">
                     {activeTab === "todo" && <Todo user={user} />}
