@@ -10,6 +10,8 @@ import SetUsername from './components/SetUsername'
 import Dashboard from './components/Dashboard'
 import Payment from './components/Payment'
 import ProjectBoard from './components/ProjectBoard'
+import AdminDashboard from './components/AdminDashboard'
+import ProfilePage from './components/ProfileSPage'
 // import io from 'socket.io-client';
 
 
@@ -39,6 +41,8 @@ function App() {
         <Route path='/dashboard' element={<Dashboard/>} />
         <Route path='/upgrade' element={<Payment/>} />
         <Route path='/project/:projectUniqueId' element={<ProjectBoard/>} />
+        <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+        <Route path="/user/profile" element={<ProfilePage/>} />
         <Route path="*" element={<Login />} />
       </Routes>
     </Router>

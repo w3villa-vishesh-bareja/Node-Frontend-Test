@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import NotificationDropdown from './NotificationDropdown';
 import Todo from "./Todo";
-import Group from "./Group";
 import CollaborativeProject from "./Collaborative";
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("todo");
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // 🔄 Loading state
+    const [loading, setLoading] = useState(true);
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+    const profileRef = useRef(null);
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -17,10 +18,8 @@ const Dashboard = () => {
         navigate("/register/login");
     };
 
-    const handleUpgrade = () => {   
-        navigate("/upgrade", {
-            state: { user }
-        });
+    const handleUpgrade = () => {
+        navigate("/upgrade", { state: { user } });
     };
 
     useEffect(() => {
@@ -33,7 +32,7 @@ const Dashboard = () => {
                     .find(row => row.startsWith("token="));
                 token = tokenMatch ? tokenMatch.split("=")[1] : null;
             }
-            
+
             try {
                 const response = await axios.get("https://nodetraining-ny09.onrender.com/user/getUser", {
                     headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -54,6 +53,19 @@ const Dashboard = () => {
         fetchUser();
     }, [navigate]);
 
+    // Handle click outside of dropdown
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setProfileMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
@@ -71,13 +83,36 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-4">
                             {user && (
                                 <>
-                                    <div className="relative">
+                                    <div className="relative" ref={profileRef}>
                                         <img
                                             src={user.photo || "https://lh3.googleusercontent.com/a/ACg8ocIa4g1EMnGziirPjc6zDlB3CfjzK-BJrpclmyhVTmIAJ0piRg=s96-c"}
                                             alt="Profile"
-                                            className="w-10 h-10 rounded-full ring-2 ring-purple-500/50 transition-all duration-300 hover:ring-purple-500"
+                                            className="w-10 h-10 rounded-full ring-2 ring-purple-500/50 transition-all duration-300 hover:ring-purple-500 cursor-pointer"
                                             referrerPolicy="no-referrer"
+                                            onClick={() => setProfileMenuOpen(!profileMenuOpen)}
                                         />
+                                        {profileMenuOpen && (
+                                            <div className="absolute left-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg z-10">
+                                            <ul className="py-2 text-sm text-gray-200">
+                                                <li
+                                                    className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+                                                    onClick={() => navigate("/admin/dashboard")}
+                                                >
+                                                    admin Dashboard
+                                                </li>
+                                                <li
+                                                    className="px-4 py-2 hover:bg-gray-700 cursor-pointer"
+                                                    onClick={() => {
+                                                    // Add your profile logic or navigation here
+                                                    console.log("View Profile clicked");
+                                                    navigate("/user/profile")
+                                                    }}
+                                                >
+                                                    View Profile
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        )}
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-lg font-medium text-white/90">{user.name}</span>
@@ -116,15 +151,14 @@ const Dashboard = () => {
                 <div className="flex justify-center gap-4 bg-gray-800/30 backdrop-blur-md rounded-xl p-2 shadow-lg">
                     {[
                         { id: "todo", label: "Todo" },
-                        { id: "group", label: "Group" },
                         { id: "collab", label: "Collaborative Project" }
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105
-                                ${activeTab === tab.id 
-                                    ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg" 
+                                ${activeTab === tab.id
+                                    ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg"
                                     : "bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white"}`}
                         >
                             {tab.label}
@@ -137,7 +171,6 @@ const Dashboard = () => {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="bg-gray-800/30 backdrop-blur-md rounded-xl p-6 shadow-lg">
                     {activeTab === "todo" && <Todo user={user} />}
-                    {activeTab === "group" && <Group user={user} />}
                     {activeTab === "collab" && <CollaborativeProject user={user} />}
                 </div>
             </main>
