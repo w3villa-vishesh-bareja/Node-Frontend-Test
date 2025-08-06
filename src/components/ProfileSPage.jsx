@@ -20,8 +20,9 @@ const Profile = () => {
   const fetchUser = async () => {
     try {
       const token = sessionStorage.getItem("token");
+      const validToken = token && token !== "null";
       const response = await axios.get("https://nodetraining-ny09.onrender.com/user/getUser", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: validToken ? { Authorization: `Bearer ${token}` } : {},
         withCredentials: true,
       });
 
